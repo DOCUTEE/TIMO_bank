@@ -4,19 +4,21 @@ from model import *
 from faker import Faker
 import random
 from datetime import datetime
+import os
 
 # Initialize Faker
 fake = Faker()
 
 # Connect to your SQLite database
-engine = create_engine("sqlite:////home/docutee/Code/Banking/database/banking.db")
+db_path = os.path.join(os.path.dirname(__file__), '..', 'database', 'banking.db')
+engine = create_engine(f"sqlite:///{os.path.abspath(db_path)}")
 Session = sessionmaker(bind=engine)
 session = Session()
 
 # Create tables if not already created
 Base.metadata.create_all(engine)
 
-NUM_CUSTOMERS = 10
+NUM_CUSTOMERS = 3
 
 # Generate customers
 for _ in range(NUM_CUSTOMERS):
@@ -79,6 +81,7 @@ for _ in range(NUM_CUSTOMERS):
 customers_new_device = session.query(Customer).all()
 customers_new_device = random.sample(customers_new_device, k = random.randint(0, min(10, len(customers_new_device))))
 
+customers_new_device = []
 # Generate devices for customers
 for customer in customers_new_device:
     device = Device(
@@ -94,7 +97,7 @@ for customer in customers_new_device:
     session.commit()
     print(f"Added new device for customer: {customer.full_name} with Device ID: {device.device_id}")
 
-# Insert authentication methods
+# Insert authentication methods if not exist
 auth_methods = {
     "password": False,
     "otp": True,
@@ -102,11 +105,14 @@ auth_methods = {
     "pin": False
 }
 for method, is_strong in auth_methods.items():
-    auth_method = AuthenticationMethod(
-        auth_method=method,
-        is_strong=is_strong
-    )
-    session.add(auth_method)
+    exists = session.query(AuthenticationMethod).filter_by(auth_method=method).first()
+    if not exists:
+        auth_method = AuthenticationMethod(
+            auth_method=method,
+            is_strong=is_strong
+        )
+        session.add(auth_method)
+session.commit()
 
 # Verify devices
 unverified_devices = session.query(Device).filter_by(is_verified=False).all()
@@ -143,7 +149,6 @@ for account in accounts:
             device_for_transaction = random.choice(verified_devices)
         else:
             continue
-        
         if transaction_type == "income":
             account.balance += transaction_amount
             transaction = TransactionLog(
@@ -154,11 +159,27 @@ for account in accounts:
                 transaction_type=transaction_type,
                 transaction_time=datetime.now().isoformat(),
                 description=fake.sentence() + f" destination: {random.choice(['ATM', 'Online Transfer', 'POS'])}, bank: {random.choice(['Bank A', 'Bank B', 'Bank C'])}, account: {account.account_number}.",
-                status=transaction_status,
+                status= "success",
                 account=account,
                 device=device_for_transaction,
                 auth_logs=[]
             )
+            session.add(transaction)
+            
+            print(
+                f'''
+                Transaction ID: {transaction.transaction_id}
+                Account ID: {account.account_id}    
+                Device ID: {device_for_transaction.device_id}
+                Amount: {transaction_amount}
+                Transaction Type: {transaction_type}
+                Transaction Time: {transaction.transaction_time}
+                Description: {transaction.description}
+                Status: {transaction.status}
+                Account Balance after transaction: {account.balance}
+                '''
+            )
+            # session.commit()
         else:
             if account.balance >= transaction_amount:
                 account.balance -= transaction_amount
@@ -186,6 +207,7 @@ for account in accounts:
                         device=device_for_transaction,
                         auth_logs=[]
                     )
+                    session.add(transaction)
                     
                     # Create an authentication log for the transaction
                     for index, auth_status in enumerate(auth_result):
@@ -211,10 +233,23 @@ for account in accounts:
                                 )
                             )
                         )
+                    session.add(transaction)
+                    print(
+                        f'''
+                        Transaction ID: {transaction.transaction_id}
+                        Account ID: {account.account_id}    
+                        Device ID: {device_for_transaction.device_id}
+                        Amount: {transaction_amount}
+                        Transaction Type: {transaction_type}
+                        Transaction Time: {transaction.transaction_time}
+                        Description: {transaction.description}
+                        Status: {transaction.status}
+                        Account Balance after transaction: {account.balance}
+                        '''
+                    )
             else:
                 print(f"Insufficient balance for transaction of {transaction_amount} on account {account.account_number}. Skipping transaction.")
                 continue
         
-        session.add(transaction)
         session.commit()
     

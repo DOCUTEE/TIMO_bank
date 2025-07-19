@@ -16,4 +16,4 @@ class Account(Base):
     date_closed = Column(String)
 
     customer = relationship("Customer", back_populates="accounts")
-    transactions = relationship("Transaction", back_populates="account")
+    transactions = relationship("TransactionLog", back_populates="account")

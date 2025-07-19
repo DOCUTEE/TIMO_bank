@@ -16,5 +16,5 @@ class Device(Base):
     
     customers = relationship("Customer", secondary=customer_device, back_populates="devices")
     auth_logs = relationship("AuthenticationLog", back_populates="device")
-    transactions = relationship("Transaction", back_populates="device")
+    transactions = relationship("TransactionLog", back_populates="device")
     risks = relationship("DeviceRisk", back_populates="device")

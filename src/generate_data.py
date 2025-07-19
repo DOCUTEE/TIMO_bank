@@ -118,7 +118,7 @@ for unverified_device in unverified_devices:
         customer_id=unverified_device.customers[0].customer_id,
         device_id=unverified_device.device_id,
         auth_method=random.choice(session.query(AuthenticationMethod).all()).auth_method,
-        auth_time=datetime.now().isoformat()
+        auth_time=datetime.now().isoformat(),
         status="verified",
         used_for="device_verification"
 
@@ -137,40 +137,84 @@ for account in accounts:
         transaction_amount = int(fake.pydecimal(left_digits=7, right_digits=0, positive=True))
         transaction_status = "failed"
         transaction = None
+        # Choose a verified device if available, else any device
+        verified_devices = [d for d in account.customer.devices if d.is_verified]
+        if verified_devices:
+            device_for_transaction = random.choice(verified_devices)
+        else:
+            continue
+        
         if transaction_type == "income":
             account.balance += transaction_amount
-            transaction = Transaction(
+            transaction = TransactionLog(
                 transaction_id=fake.uuid4(),
                 account_id=account.account_id,
                 device_id=random.choice(account.customer.devices).device_id,
                 amount=transaction_amount,
                 transaction_type=transaction_type,
                 transaction_time=datetime.now().isoformat(),
-                description=fake.sentence() + f" destination: {random.choice(['ATM', 'Online Transfer', 'POS'])}, bank: {random.choice(['Bank A', 'Bank B', 'Bank C'])}, account: {account.account_number}."
+                description=fake.sentence() + f" destination: {random.choice(['ATM', 'Online Transfer', 'POS'])}, bank: {random.choice(['Bank A', 'Bank B', 'Bank C'])}, account: {account.account_number}.",
                 status=transaction_status,
                 account=account,
-                device=random.choice(account.customer.devices),
-                auth_logs=[],
+                device=device_for_transaction,
+                auth_logs=[]
             )
         else:
             if account.balance >= transaction_amount:
                 account.balance -= transaction_amount
-                transaction_status = "success"
+                # Have 2 cases: success and failed in auth logs
+                list_of_auth_results = [
+                    ["success", "failed"],
+                    ["failed"],
+                    ["success", "success"]
+                ]
+                for auth_result in list_of_auth_results:
+                    if (["success", "success"] in auth_result):
+                        transaction_status = "success"
+                    else:
+                        transaction_status = "failed"
+                    transaction = TransactionLog(
+                        transaction_id=fake.uuid4(),
+                        account_id=account.account_id,
+                        device_id=random.choice(account.customer.devices).device_id,
+                        amount=transaction_amount,
+                        transaction_type=transaction_type,
+                        transaction_time=datetime.now().isoformat(),
+                        description=fake.sentence() + f" destination: {random.choice(['ATM', 'Online Transfer', 'POS'])}, bank: {random.choice(['Bank A', 'Bank B', 'Bank C'])}, account: {account.account_number}.",
+                        status=transaction_status,
+                        account=account,
+                        device=device_for_transaction,
+                        auth_logs=[]
+                    )
+                    
+                    # Create an authentication log for the transaction
+                    for index, auth_status in enumerate(auth_result):
+                        if (index == 0):
+                            if transaction_amount > 10000000:
+                                auth_method= "biometric"
+                            else:
+                                auth_method = "pin"
+                        else:
+                            auth_method = 'otp'
+                        
+                        transaction.auth_logs.append(
+                            AuthTransaction(
+                                transaction = transaction,
+                                auth_log = AuthenticationLog(
+                                    auth_log_id=fake.uuid4(),
+                                    customer_id=account.customer.customer_id,
+                                    device_id=random.choice(account.customer.devices).device_id,
+                                    auth_method=auth_method,
+                                    auth_time=datetime.now().isoformat(),
+                                    status=auth_status,
+                                    used_for="transaction"
+                                )
+                            )
+                        )
             else:
-                transaction_status = "failed"
-            transaction = Transaction(
-                transaction_id=fake.uuid4(),
-                account_id=account.account_id,
-                device_id=random.choice(account.customer.devices).device_id,
-                amount=transaction_amount,
-                transaction_type=transaction_type,
-                transaction_time=datetime.now().isoformat(),
-                status=transaction_status,
-                account=account,
-                device=random.choice(account.customer.devices),
-                auth_logs=[],
-                description=fake.sentence() + f" destination: {random.choice(['ATM', 'Online Transfer', 'POS'])}, bank: {random.choice(['Bank A', 'Bank B', 'Bank C'])}, account: {account.account_number}."
-            )
-        # account.transactions.append(transaction)
+                print(f"Insufficient balance for transaction of {transaction_amount} on account {account.account_number}. Skipping transaction.")
+                continue
+        
         session.add(transaction)
         session.commit()
+    

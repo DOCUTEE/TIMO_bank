@@ -16,7 +16,7 @@ class TransactionRisk(Base):
     __tablename__ = "transaction_risk"
 
     risk_id = Column(String, primary_key=True)
-    transaction_id = Column(String, ForeignKey("transaction.transaction_id"))
+    transaction_id = Column(String, ForeignKey("transaction_log.transaction_id"))
     detected_time = Column(String)
     details = Column(String)
 

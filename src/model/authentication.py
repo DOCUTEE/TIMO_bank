@@ -27,8 +27,8 @@ class AuthenticationLog(Base):
 class AuthTransaction(Base):
     __tablename__ = "auth_transaction"
 
-    transaction_id = Column(String, ForeignKey("transaction.transaction_id"), primary_key=True)
+    transaction_id = Column(String, ForeignKey("transaction_log.transaction_id"), primary_key=True)
     auth_log_id = Column(String, ForeignKey("authentication_log.auth_log_id"), primary_key=True)
 
-    transaction = relationship("Transaction", back_populates="auth_logs")
+    transaction = relationship("TransactionLog", back_populates="auth_logs")
     auth_log = relationship("AuthenticationLog", back_populates="transactions")

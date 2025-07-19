@@ -2,8 +2,8 @@ from sqlalchemy import Column, String, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import Base
 
-class Transaction(Base):
-    __tablename__ = "transaction"
+class TransactionLog(Base):
+    __tablename__ = "transaction_log"
 
     transaction_id = Column(String, primary_key=True)
     account_id = Column(String, ForeignKey("account.account_id"))

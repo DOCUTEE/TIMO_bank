@@ -19,7 +19,7 @@ session = Session()
 # Create tables if not already created
 Base.metadata.create_all(engine)
 
-NUM_CUSTOMERS = 3
+NUM_CUSTOMERS = 10
 
 # Generate customers
 for _ in range(NUM_CUSTOMERS):

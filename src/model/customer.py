@@ -12,8 +12,6 @@ class Customer(Base):
     email = Column(String)
     customer_pwd = Column(String)
     phone_number = Column(String)
-    identity_type = Column(String)
-    identity_number = Column(String)
     created_at = Column(String)
 
     accounts = relationship("Account", back_populates="customer")

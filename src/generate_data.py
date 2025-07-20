@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import func
 from model import *
 from faker import Faker
 import random
@@ -80,8 +81,6 @@ for _ in range(NUM_CUSTOMERS):
 # Case: Buy new device
 customers_new_device = session.query(Customer).all()
 customers_new_device = random.sample(customers_new_device, k = random.randint(0, min(10, len(customers_new_device))))
-
-customers_new_device = []
 # Generate devices for customers
 for customer in customers_new_device:
     device = Device(
@@ -189,9 +188,45 @@ for account in accounts:
                     ["failed"],
                     ["success", "success"]
                 ]
+                today = datetime.now().isoformat()
+                sum_today = session.query(TransactionLog).filter(
+                    TransactionLog.account_id == account.account_id and TransactionLog.transaction_type == 'expense',
+                    TransactionLog.transaction_time.startswith(today)
+                ).with_entities(func.sum(TransactionLog.amount)).scalar() or 0
+
+                if sum_today > 20000000:
+                    print(f"Account {account.account_number} has transactions over 20M today, using biometric authentication.")
+                    # Create a biometric authentication log 
+                    if random.choice([True, False]):
+                        authentication_log = AuthenticationLog(
+                            auth_log_id=fake.uuid4(),
+                            customer_id=account.customer.customer_id,
+                            device_id=random.choice(account.customer.devices).device_id,
+                            auth_method="biometric",
+                            auth_time=datetime.now().isoformat(),
+                            status="success",
+                            used_for="authentication_over_20M"
+                        )
+                        session.add(authentication_log)
+                        session.commit()
+                    authentication_log = AuthenticationLog(
+                        auth_log_id=fake.uuid4(),
+                        customer_id=account.customer.customer_id,
+                        device_id=random.choice(account.customer.devices).device_id,
+                        auth_method="biometric",
+                        auth_time=datetime.now().isoformat(),
+                        status="failed",
+                        used_for="authentication_over_20M"
+                    )
+                    session.add(authentication_log)
+                    session.commit()
+                    continue
+
+                # Randomly choose an authentication result
                 for auth_result in list_of_auth_results:
                     if (["success", "success"] in auth_result):
                         transaction_status = "success"
+                        # Calculate sum of amount in the current day for this account
                     else:
                         transaction_status = "failed"
                     transaction = TransactionLog(

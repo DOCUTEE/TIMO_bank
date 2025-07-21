@@ -107,7 +107,7 @@ def generate_transaction_data(session: sessionmaker, accounts, fake=fake):
 
         for _ in range(random.randint(1, 100)):
             txn_type = random.choice(["income", "expense"])
-            amount = int(fake.pydecimal(left_digits=8, right_digits=0, positive=True))
+            amount = random.randint(1000, 100000000)
             device = random.choice(verified_devices)
 
             if txn_type == "income":

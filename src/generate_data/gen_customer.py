@@ -4,6 +4,7 @@ from faker import Faker
 import random
 from datetime import datetime
 from .gen_national_id import generate_national_id
+from .gen_transaction import create_auth_log
 
 
 def generate_customer_data(session: sessionmaker, num_customers: int = 100, fake: Faker = Faker('vi_VN'), today = datetime.now()):
@@ -28,13 +29,16 @@ def generate_customer_data(session: sessionmaker, num_customers: int = 100, fake
             device_id=fake.uuid4(),
             device_type=random.choice(["mobile", "tablet"]),
             os=random.choice(["Android", "iOS"]),
-            is_verified=random.choice([True, False]),
+            is_verified=True,
             first_seen=today.isoformat(),
             last_seen=today.isoformat(),
             app_version = f"{random.randint(1, 5)}.{random.randint(0, 9)}.{random.randint(0, 9)}"
         )
         customer_device.customers.append(customer)
         session.add(customer_device)
+
+        authentication_log = create_auth_log(customer, customer_device, "biometric", "success", "device_verification")
+        session.add(authentication_log)
         session.commit()
 
         # Generate a random identity type and number

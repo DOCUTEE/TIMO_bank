@@ -13,7 +13,7 @@ fake = Faker(['vi_VN'])  # Vietnamese and English locales
 
 # Connect to your SQLite database
 db_path = os.path.join(os.path.dirname(__file__), '..', 'database', 'banking.db')
-engine = create_engine(f"sqlite:///{os.path.abspath(db_path)}", echo=True)
+engine = create_engine(f"sqlite:///{os.path.abspath(db_path)}")
 Session = sessionmaker(bind=engine)
 session = Session()
 

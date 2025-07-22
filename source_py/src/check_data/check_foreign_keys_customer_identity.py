@@ -13,7 +13,6 @@ def check_foreign_keys_customer_identity(engine: create_engine):
             SELECT customer_id FROM customer_identity
         )
     """)
-
     results = conn.execute(query).fetchall()
     if results:
         print(f"Found {len(results)} orphaned customer rows:")

@@ -11,18 +11,13 @@ default_args = {
     'start_date': datetime(2024, 1, 1),
 }
 
-def log_postgres_version():
-    hook = PostgresHook(postgres_conn_id="postgres_default")
-    result = hook.get_first("SELECT version();")
-    print("✅ Postgres Version:", result[0])
-
 with DAG(
     dag_id='banking_checking',
     default_args=default_args,
     schedule_interval=None,
     catchup=False,
     description='Run banking checking pipeline',
-    tags=['docker', 'banking', 'checking'],
+    tags=['banking', 'checking'],
 ) as dag:
 
     today = date.today().strftime("%Y-%m-%d")
@@ -31,23 +26,17 @@ with DAG(
         task_id='start_banking_checking',
         bash_command=f'echo "Starting banking checking pipeline {today}"'
     )
-
-    run_select = PostgresOperator(
-        task_id="select_version",
-        postgres_conn_id="postgres_default",
-        sql="SELECT version();"
-    )
-
-    print_version = PythonOperator(
-        task_id="print_version_result",
-        python_callable=log_postgres_version
-    )
-
-    ssh_run_script = SSHOperator(
-        task_id="run_script_over_ssh",
+    generate_data_checking = SSHOperator(
+        task_id="generate_data_checking",
         ssh_conn_id="ssh_python_service",
         command="python /app/generate_data.py",
         do_xcom_push=True
     )   
+    data_quality_checking = SSHOperator(
+        task_id="data_quality_checking",
+        ssh_conn_id="ssh_python_service",
+        command="python /app/data_quality_standards.py",
+        do_xcom_push=True
+    ) 
 
-    start_banking_checking >> run_select >> print_version
+    start_banking_checking >> generate_data_checking >> data_quality_checking

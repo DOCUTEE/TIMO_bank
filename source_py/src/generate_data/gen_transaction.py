@@ -108,7 +108,7 @@ def generate_transaction_data(session: sessionmaker, accounts, fake=fake):
         if not verified_devices:
             continue
 
-        for _ in range(random.randint(1, 100)):
+        for _ in range(random.randint(1, 5)):
             txn_type = random.choice(["income", "expense"])
             amount = random.randint(1000, 50000000)
             device = random.choice(verified_devices)

@@ -19,7 +19,7 @@ def check_uniqueness(engine: create_engine):
             SELECT {pk_clause}, COUNT(*) as cnt
             FROM {table_name}
             GROUP BY {pk_clause}
-            HAVING cnt > 1
+            HAVING COUNT(*) > 1
         """)
         results = conn.execute(query).fetchall()
 

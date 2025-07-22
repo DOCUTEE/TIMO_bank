@@ -7,7 +7,7 @@ def check_national_id_format(engine: create_engine):
         SELECT identity_number
         FROM customer_identity
         WHERE identity_type = 'national_id'
-        AND NOT identity_number REGEXP '^(0\d{2})([0-3])(\d{2})(\d{6})$'
+        AND NOT identity_number ~ '^(0\\d{2})([0-3])(\\d{2})(\\d{6})$'
     """)
     results = conn.execute(query).fetchall()
 

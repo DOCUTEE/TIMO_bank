@@ -8,39 +8,44 @@ from datetime import datetime
 import os
 from generate_data import *
 
-# Initialize Faker
-fake = Faker(['vi_VN'])  # Vietnamese and English locales
+if __name__ == "__main__":
 
-# Connect to your SQLite database
-engine = create_engine('sqlite:////app/database/banking.db', echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+    # Initialize Faker
+    fake = Faker(['vi_VN'])  # Vietnamese locale
 
-# Create tables if not already created
-Base.metadata.create_all(engine)
+    # Connect to your PostgreSQL database
+    engine = create_engine("postgresql+psycopg2://airflow:airflow@postgres:5432/airflow", echo=True)
 
-NUM_CUSTOMERS = 100
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-# Generate customers
-generate_customer_data(session, num_customers=NUM_CUSTOMERS, fake=fake)
+    # Create tables if not already created
+    Base.metadata.create_all(engine)
 
-# Case: Buy new device
-customers_new_device = session.query(Customer).all()
-customers_new_device = random.sample(customers_new_device, k = random.randint(0, min(100, len(customers_new_device))))
+    NUM_CUSTOMERS = 10
 
-# Generate devices for customers
-generate_new_customer_device(session, customers=customers_new_device, fake=fake)
+    # Insert authentication methods if not exist
+    generate_auth_methods(session)
 
-# Insert authentication methods if not exist
-generate_auth_methods(session)
+    # Generate customers
+    generate_customer_data(session, num_customers=NUM_CUSTOMERS, fake=fake)
 
-# Verify devices
-unverified_devices = session.query(Device).filter_by(is_verified=False).all()
-verify_unverified_devices(session, fake=fake, unverified_devices=unverified_devices)
+    # Case: Buy new device
+    customers_new_device = session.query(Customer).all()
+    customers_new_device = random.sample(customers_new_device, k = random.randint(0, min(100, len(customers_new_device))))
 
-# Generate transactions for accounts
-accounts = session.query(Account).all()
-accounts = random.sample(accounts, k = random.randint(0, min(1000, len(accounts))))
+    # Generate devices for customers
+    generate_new_customer_device(session, customers=customers_new_device, fake=fake)
 
-generate_transaction_data(session, accounts=accounts, fake=fake)
+
+
+    # Verify devices
+    unverified_devices = session.query(Device).filter_by(is_verified=False).all()
+    verify_unverified_devices(session, fake=fake, unverified_devices=unverified_devices)
+
+    # Generate transactions for accounts
+    accounts = session.query(Account).all()
+    accounts = random.sample(accounts, k = random.randint(0, min(1000, len(accounts))))
+
+    generate_transaction_data(session, accounts=accounts, fake=fake)
     

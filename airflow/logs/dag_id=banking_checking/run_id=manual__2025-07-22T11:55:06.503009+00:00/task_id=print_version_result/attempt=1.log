@@ -1,0 +1,17 @@
+[2025-07-22T11:55:09.918+0000] {taskinstance.py:1956} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: banking_checking.print_version_result manual__2025-07-22T11:55:06.503009+00:00 [queued]>
+[2025-07-22T11:55:09.928+0000] {taskinstance.py:1956} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: banking_checking.print_version_result manual__2025-07-22T11:55:06.503009+00:00 [queued]>
+[2025-07-22T11:55:09.928+0000] {taskinstance.py:2170} INFO - Starting attempt 1 of 1
+[2025-07-22T11:55:09.944+0000] {taskinstance.py:2191} INFO - Executing <Task(PythonOperator): print_version_result> on 2025-07-22 11:55:06.503009+00:00
+[2025-07-22T11:55:09.948+0000] {standard_task_runner.py:60} INFO - Started process 477 to run task
+[2025-07-22T11:55:09.953+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'banking_checking', 'print_version_result', 'manual__2025-07-22T11:55:06.503009+00:00', '--job-id', '13', '--raw', '--subdir', 'DAGS_FOLDER/banking_checking.py', '--cfg-path', '/tmp/tmp_8f3z6i1']
+[2025-07-22T11:55:09.955+0000] {standard_task_runner.py:88} INFO - Job 13: Subtask print_version_result
+[2025-07-22T11:55:10.014+0000] {task_command.py:423} INFO - Running <TaskInstance: banking_checking.print_version_result manual__2025-07-22T11:55:06.503009+00:00 [running]> on host f8d6997bd320
+[2025-07-22T11:55:10.089+0000] {taskinstance.py:2480} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='banking_checking' AIRFLOW_CTX_TASK_ID='print_version_result' AIRFLOW_CTX_EXECUTION_DATE='2025-07-22T11:55:06.503009+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-07-22T11:55:06.503009+00:00'
+[2025-07-22T11:55:10.094+0000] {base.py:83} INFO - Using connection ID 'postgres_default' for task execution.
+[2025-07-22T11:55:10.098+0000] {sql.py:450} INFO - Running statement: SELECT version();, parameters: None
+[2025-07-22T11:55:10.100+0000] {sql.py:459} INFO - Rows affected: 1
+[2025-07-22T11:55:10.101+0000] {logging_mixin.py:188} INFO - ✅ Postgres Version: PostgreSQL 13.21 (Debian 13.21-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+[2025-07-22T11:55:10.102+0000] {python.py:201} INFO - Done. Returned value was: None
+[2025-07-22T11:55:10.112+0000] {taskinstance.py:1138} INFO - Marking task as SUCCESS. dag_id=banking_checking, task_id=print_version_result, execution_date=20250722T115506, start_date=20250722T115509, end_date=20250722T115510
+[2025-07-22T11:55:10.131+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2025-07-22T11:55:10.147+0000] {taskinstance.py:3280} INFO - 0 downstream tasks scheduled from follow-on schedule check

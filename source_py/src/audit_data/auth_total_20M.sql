@@ -22,7 +22,7 @@ WITH expense_trans_raw AS (
 expense_trans AS (
     SELECT * 
     FROM expense_trans_raw
-    WHERE row_num = 1  --keep first auth per transaction
+    WHERE row_num = 1 
 ),
 cumulative_expense_amount as (
 	SELECT 

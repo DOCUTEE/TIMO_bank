@@ -2,7 +2,7 @@ with verified_device as
 (
 	Select * 
 	from device
-	where is_verified  = TRUE
+	where is_verified = true
 ),
 authentication_for_verify as
 (
@@ -19,16 +19,10 @@ risky_authentication as
 (
 	SELECT * 
 	FROM device dv
-	WHERE dv.device_id not in (
+	WHERE dv.is_verified = true and dv.device_id not in (
 		SELECT afv.device_id
 		FROM authentication_for_verify afv
 	)
 )
 SELECT * 
 FROM risky_authentication
-
-
-
-
---select distinct used_for
---from authentication_log al 

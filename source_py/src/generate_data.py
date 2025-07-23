@@ -41,6 +41,7 @@ if __name__ == "__main__":
 
     # Verify devices
     unverified_devices = session.query(Device).filter_by(is_verified=False).all()
+    unverified_devices = random.sample(unverified_devices, k = random.randint(0, len(unverified_devices)))
     verify_unverified_devices(session, fake=fake, unverified_devices=unverified_devices)
 
     # Generate transactions for accounts

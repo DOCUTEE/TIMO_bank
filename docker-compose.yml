@@ -14,6 +14,7 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW_CONN_POSTGRES_DEFAULT: postgresql://airflow:airflow@postgres:5432/airflow
     AIRFLOW_CONN_SSH_PYTHON_SERVICE: "ssh://airflow_user:airflow@python-service"
+    
 
   volumes:
     - ./airflow/dags:/opt/airflow/dags
@@ -69,9 +70,31 @@ services:
     volumes:
       - ./source_py/src:/app  # optional if you want live code reload
     working_dir: /app # or any entrypoint script
-
+  superset:
+    build:
+      context: ./visualization
+      dockerfile: superset.Dockerfile
+    environment:
+      SUPERSET_SECRET_KEY: "iHPymayQbD8FCK/RWsbQMwKItR2JLcKMJxjrwK4hkXOhqdUv+f7ohrSG"
+      DATABASE_URL: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+    ports:
+      - 8090:8088
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./visualization/superset_home:/app/superset_home
+    command: >
+      bash -c "
+        superset db upgrade &&
+        superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin &&
+        superset init &&
+        superset run -h 0.0.0.0 -p 8088
+      "
 volumes:
   postgres-db-volume:
+
+
   
 
 

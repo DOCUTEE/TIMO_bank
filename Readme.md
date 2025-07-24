@@ -1,6 +1,6 @@
 # Banking Data Quality & Audit Platform
 
-![TIMO CASE STUDY](/material/timo.png)
+![TIMO CASE STUDY](material/timo.png)
 
 ## Table of Contents
 - [My Story](#my-story)
@@ -93,45 +93,45 @@ A pre-configured pipeline is available in Airflow to automate data generation an
    - **Username**: `admin`
    - **Password**: `admin`
 
-   ![Airflow Login](/material/Airflow_login.png)
+   ![Airflow Login](material/Airflow_login.png)
 
 3. Locate the pipeline designed for data generation and quality checks. Click on it to view details.
 
-   ![Banking Pipeline](/material/banking_checking_pipeline.png)
+   ![Banking Pipeline](material/banking_checking_pipeline.png)
 
 4. The pipeline is scheduled to run daily. To trigger it manually, click the "Run" button.
 
-   ![Run Pipeline](/material/run_pipeline.png)
+   ![Run Pipeline](material/run_pipeline.png)
 
 ## Visualizing Data with Superset
 
 To view risk alerts through a visualization dashboard, use the Superset service:
 
-1. Access Superset at [http://localhost:8081/](http://localhost:8081/) and log in with:
+1. Access Superset at [http://localhost:8090/](http://localhost:8090/) and log in with:
    - **Username**: `admin`
    - **Password**: `admin`
 
-   ![Superset Login](/material/login_superset.png)
+   ![Superset Login](material/login_superset.png)
 
 2. If this is your first time accessing Superset, you need to import the dashboard manually:
    - Navigate to the **Dashboards** tab and click the **Import** button.
 
-     ![Import Dashboard](/material/import_dashboard.png)
+     ![Import Dashboard](material/import_dashboard.png)
 
    - Follow the prompts to import the dashboard using the provided zip file.
 
-     ![Import Dashboard Zip](/material/import_dashboard_zip.png)
+     ![Import Dashboard Zip](material/import_dashboard_zip.png)
 
 3. Once imported, you can view the pre-built dashboard.
 
-   ![Dashboard Preview](/material/dashboard_preview.png)
+   ![Dashboard Preview](material/dashboard_preview.png)
 
 4. Explore the complete dashboard for a comprehensive overview.
 
-   ![Full Dashboard](/material/full_dashboard.png)
+   ![Full Dashboard](material/full_dashboard.png)
 ## Schema
 
-![Banking Schema](/material/banking_erd.png)
+![Banking Schema](material/banking_erd.png)
 
 Below is a short and simple description of the tables in the provided database schema:
 
@@ -171,7 +171,7 @@ This schema supports the management of customers, devices, accounts, transaction
 
 ## Data Generation
 
-![Generate Data](/material/generate_data_high.png)
+![Generate Data](material/generate_data_high.png)
 
 The platform generates synthetic data to simulate key banking scenarios, including:
 
@@ -185,7 +185,7 @@ This data is used to test and validate the platform’s data quality and auditin
 
 ## Data Quality Check
 
-![Data Quality](/material/data_quaility_check.png)
+![Data Quality](material/data_quaility_check.png)
 
 Data quality is enforced via scripts in [`source_py/src/check_data/`](source_py/src/check_data/):
 
@@ -197,7 +197,7 @@ Data quality is enforced via scripts in [`source_py/src/check_data/`](source_py/
 
 ## Audit
 
-![Audit Data](/material/data_audit.png)
+![Audit Data](material/data_audit.png)
 
 Audit SQL queries in [`source_py/src/audit_data/`](source_py/src/audit_data/) help monitor security and compliance:
 

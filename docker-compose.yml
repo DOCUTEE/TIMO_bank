@@ -52,6 +52,8 @@ services:
   postgres:
     image: postgres:13
     hostname: postgres
+    ports:
+      - 5433:5432
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -83,7 +85,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./visualization/superset_home:/app/superset_home
+      - superset-home-volume:/app/superset_home
     command: >
       bash -c "
         superset db upgrade &&
@@ -93,6 +95,7 @@ services:
       "
 volumes:
   postgres-db-volume:
+  superset-home-volume:
 
 
   

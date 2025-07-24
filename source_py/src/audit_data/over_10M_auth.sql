@@ -20,15 +20,13 @@ with transaction_joined as
 over_10M as
 (
 	SELECT 
-		tj.*
+		tj.transaction_id,
+		SUM(CASE WHEN tj.is_strong = TRUE THEN 1 ELSE 0 END) as number_of_strong_auth
 	FROM
 		transaction_joined tj
 	Where 
 		tj.amount > 10000000
 	GROUP BY tj.transaction_id
-	having 
-		SUM(CASE WHEN tj.is_strong = TRUE THEN 1 ELSE 0 END) = 0
-	ORDER BY tj.transaction_id 
 )
 select * 
-from over_10M
+from over_10M join transaction_log using (transaction_id)

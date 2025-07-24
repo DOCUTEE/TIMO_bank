@@ -118,7 +118,7 @@ To view risk alerts through a visualization dashboard, use the Superset service:
 
      ![Import Dashboard](material/import_dashboard.png)
 
-   - Follow the prompts to import the dashboard using the provided zip file.
+   - Follow the prompts to import the dashboard using the provided zip file.Maybe you'll be asked for the Postgres password — just type `airflow` to continue.
 
      ![Import Dashboard Zip](material/import_dashboard_zip.png)
 
